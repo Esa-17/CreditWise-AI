@@ -1,0 +1,10 @@
+data/
+artifacts/
+src/
+tests/
+scripts/
+mlruns/
+mlflow.db
+app.py
+*.xls
+*.xlsx

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CreditWise AI - Credit Default Risk Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--navy:#0B1F3A;--navy2:#13294B;--blue:#2563EB;--bg:#F4F7FB;--card:#fff;--line:#E2E8F0;--mut:#64748B;--txt:#0F172A;
+--critical:#B91C1C;--high:#EA580C;--elevated:#CA8A04;--watch:#2563EB}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh}
+aside{width:250px;background:var(--navy);color:#CBD5E1;padding:18px 14px;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0;display:flex;flex-direction:column}
+.brand{font-size:1.25rem;font-weight:800;color:#fff;display:flex;gap:8px;align-items:center}.sub{font-size:.72rem;color:#94A3B8;margin:2px 0 18px 34px}
+nav a{display:block;padding:9px 12px;border-radius:8px;color:#CBD5E1;text-decoration:none;font-size:.9rem;margin-bottom:3px;cursor:pointer}
+nav a:hover{background:var(--navy2)}nav a.on{background:var(--blue);color:#fff;font-weight:600}
+.side-box{margin-top:auto;font-size:.76rem;background:var(--navy2);border-radius:10px;padding:12px;line-height:1.5}
+details.tiers{margin-top:14px;font-size:.8rem}details.tiers summary{cursor:pointer;color:#E2E8F0}
+details.tiers label{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+details.tiers input{width:70px;padding:3px 6px;border-radius:6px;border:0}
+main{flex:1;padding:26px 30px;min-width:0;max-width:1500px}
+h1{margin:0 0 4px;font-size:1.65rem;color:var(--navy)}h2{font-size:1.1rem;color:var(--navy);margin:22px 0 10px}h3{font-size:.95rem;margin:0 0 8px;color:var(--navy)}
+.cap{color:var(--mut);font-size:.86rem;margin-bottom:16px}
+.grid{display:grid;gap:14px}.g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:1.3fr 1.1fr 1.1fr}.g2{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.kpi .l{font-size:.72rem;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.04em}.kpi .v{font-size:1.6rem;font-weight:800;color:var(--navy);margin:2px 0}.kpi .s{font-size:.76rem;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:.84rem}th{text-align:left;background:#F8FAFC;color:var(--mut);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:8px 10px;border-bottom:1px solid #EEF2F7;vertical-align:top}tr.click{cursor:pointer}tr.click:hover{background:#F1F5FF}
+.scroll{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;color:#fff;font-size:.74rem;font-weight:700;white-space:nowrap}
+.warn,.info,.ok{border-radius:10px;padding:12px 16px;font-size:.88rem;margin:12px 0;line-height:1.5}
+.warn{background:#FFF7ED;border:1px solid #FED7AA;color:#7C2D12}.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A}.ok{background:#F0FDF4;border:1px solid #BBF7D0;color:#14532D}
+.bar{height:7px;background:#E2E8F0;border-radius:4px;min-width:70px}.bar i{display:block;height:100%;background:var(--blue);border-radius:4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}.row label{font-size:.76rem;color:var(--mut);display:flex;flex-direction:column;gap:3px;font-weight:600}
+input,select,textarea,button{font:inherit;font-size:.86rem}input,select,textarea{padding:7px 10px;border:1px solid #CBD5E1;border-radius:8px;background:#fff}
+button{padding:8px 14px;border-radius:8px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;font-weight:600}button.sec{background:#fff;color:var(--blue)}button:disabled{opacity:.4;cursor:not-allowed}
+.ins li{margin-bottom:7px;font-size:.87rem}ul{padding-left:18px;margin:6px 0}
+.chip{display:inline-flex;gap:4px;align-items:center;font-size:.8rem;margin-right:8px}
+@media(max-width:1100px){.g5,.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:800px){body{flex-direction:column}aside{width:100%;height:auto;position:relative}nav{display:flex;flex-wrap:wrap;gap:4px}main{padding:16px}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">🛡️ CreditWise AI</div><div class="sub">Credit Risk Intelligence</div>
+  <nav id="nav"></nav>
+  <details class="tiers"><summary>Risk tier thresholds (provisional)</summary>
+    <div style="font-size:.72rem;color:#94A3B8;margin-top:6px">Demo settings - require validation before any operational use.</div>
+    <label>Critical ≥ <input id="t-c" type="number" step="0.01" min="0" max="1"></label>
+    <label>High ≥ <input id="t-h" type="number" step="0.01" min="0" max="1"></label>
+    <label>Elevated ≥ <input id="t-e" type="number" step="0.01" min="0" max="1"></label>
+  </details>
+  <div class="side-box" id="sidebox">Loading…</div>
+  <div style="font-size:.7rem;color:#64748B;margin-top:10px">Decision-support prototype · human review required</div>
+</aside>
+<main id="app"><h1>Loading…</h1></main>
+
+<script>
+const PAGES=["Executive Overview","Model Performance","Top-500 Review Queue","Top-20 Action Plan","Customer Investigation","Responsible AI","Experiment Tracking"];
+const TIER_ORDER=["Critical","High","Elevated","Watch"];
+const TCOL={Critical:"#B91C1C",High:"#EA580C",Elevated:"#CA8A04",Watch:"#2563EB"};
+const ACTIONS=["CALL / PAYMENT OUTREACH","LIMIT REVIEW","PAYMENT PLAN REVIEW","GENERAL ACCOUNT REVIEW (insufficient signals)"];
+const STATUSES=["Pending review","In review","Contacted","Plan offered","Limit reviewed","No action needed"];
+let S=null,Q=null,tiers={},qstate={tiers:new Set(TIER_ORDER),action:"All",lo:0,hi:1,search:"",page:1,size:25};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const f3=v=>v==null?"-":(+v).toFixed(3),pc=v=>v==null?"-":(100*v).toFixed(1)+"%",n0=v=>v==null?"-":Math.round(v).toLocaleString();
+const PL={margin:{l:50,r:20,t:44,b:44},font:{size:12},paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",legend:{orientation:"h",y:-0.2}};
+const CFG={displayModeBar:false,responsive:true};
+const plot=(id,data,layout={})=>Plotly.newPlot(id,data,{...PL,...layout},CFG);
+
+/* review log (browser localStorage - works on a static host) */
+const LS="creditwise_review_log";
+const getLog=()=>{try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch{return{}}};
+const setLog=l=>{try{localStorage.setItem(LS,JSON.stringify(l))}catch{}};
+const statusOf=id=>(getLog()[id]||{}).status||"Pending review";
+
+function tierOf(p){return p>=tiers.Critical?"Critical":p>=tiers.High?"High":p>=tiers.Elevated?"Elevated":"Watch"}
+const pill=t=>`<span class="pill" style="background:${TCOL[t]}">${t}</span>`;
+const kpi=(l,v,s)=>`<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||""}</div></div>`;
+const table=(head,rows,cls="")=>`<table class="${cls}"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+
+function csv(rows,cols){const q=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};return [cols.join(","),...rows.map(r=>cols.map(c=>q(r[c])).join(","))].join("\n")}
+function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+const qRow=r=>({"Rank":r.rank,"Customer ID":r.id,"Predicted default probability":r.prob,"Risk tier":tierOf(r.prob),"Primary risk reason":r.primary,"Additional risk reasons":r.additional,"Recommended review action":r.action,"Review priority":S.tier_priority[tierOf(r.prob)],"Human-review status":statusOf(r.id)});
+const QCOLS=["Rank","Customer ID","Predicted default probability","Risk tier","Primary risk reason","Additional risk reasons","Recommended review action","Review priority","Human-review status"];
+const planRow=r=>({"Rank":r.rank,"Customer ID":r.id,"Default-risk probability":r.prob,"Risk tier":tierOf(r.prob),"Main risk signals":[r.primary,r.additional].filter(Boolean).join(" | "),"Why prioritised":`Ranked #${r.rank} of ${n0(S.n_population)} accounts by model-estimated default probability (${pc(r.prob)}); a statistical estimate, not a verdict.`,"Recommended action":r.action,"Reason for recommendation":r.actionReason,"Suggested next step":r.nextStep,"Human-review status":statusOf(r.id)});
+const PCOLS=["Rank","Customer ID","Default-risk probability","Risk tier","Main risk signals","Why prioritised","Recommended action","Reason for recommendation","Suggested next step","Human-review status"];
+
+/* ---------- nav / routing ---------- */
+function route(){const h=decodeURIComponent(location.hash.slice(1))||PAGES[0];const [pg,arg]=h.split("::");const page=PAGES.includes(pg)?pg:PAGES[0];
+  $("#nav").innerHTML=PAGES.map(p=>`<a class="${p===page?"on":""}" href="#${encodeURIComponent(p)}">${p}</a>`).join("");
+  const R={"Executive Overview":overview,"Model Performance":performance,"Top-500 Review Queue":queue,"Top-20 Action Plan":actions,"Customer Investigation":()=>investigate(arg),"Responsible AI":responsible,"Experiment Tracking":tracking};
+  R[page]();window.scrollTo(0,0)}
+const go=(p,arg)=>{location.hash=encodeURIComponent(p)+(arg?encodeURIComponent("::"+arg):"")};
+window.addEventListener("hashchange",route);
+
+/* ---------- pages ---------- */
+function bestModel(){return S.models[S.final_model]}
+function overview(){
+  const m=bestModel(),t=m.test,o=S.oof_topk,ab=S.ablation,dq=S.data_quality;
+  const nHigh=S.histogram.reduce((a,c,i)=>a+(i/100>=tiers.High-1e-9?c:0),0);
+  $("#app").innerHTML=`<h1>Executive Overview</h1><div class="cap">Key metrics, model performance and risk insights at a glance. Decision-support prototype - not a credit-decision engine.</div>
+  <div class="grid g5">${kpi("Total records",n0(S.n_total),"UCI Default of Credit Card Clients")}${kpi("Default prevalence",pc(S.default_rate_total),`observed (${n0(Math.round(S.default_rate_total*S.n_total))} / ${n0(S.n_total)})`)}
+  ${kpi("Model",esc(S.final_model),"selected on validation PR-AUC")}${kpi("Top-500 queue size",n0(S.queue_size),"accounts for review")}${kpi("High-risk population",n0(nHigh),`predicted probability ≥ ${(tiers.High*100).toFixed(0)}% (provisional)`)}</div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><div id="c-dist" style="height:340px"></div><div class="cap" style="margin:0">Colour = provisional risk tier of each bin's lower edge.</div></div>
+    <div class="card"><h3>Model performance (held-out test set)</h3>${table(["Metric","Value"],[["ROC-AUC",t.roc_auc],["PR-AUC",t.pr_auc],["Precision",t.precision],["Recall",t.recall],["F1",t.f1]].map(r=>`<tr><td>${r[0]}</td><td><b>${f3(r[1])}</b></td></tr>`))}
+      <h3 style="margin-top:16px">Top-${o.k_used} operational metrics</h3><div class="cap" style="margin-bottom:6px">Out-of-fold scores for all ${n0(S.n_total)} labelled accounts</div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr)">${kpi("Precision@"+o.k_used,f3(o.precision_at_k))}${kpi("Recall@"+o.k_used,f3(o.recall_at_k))}${kpi("Lift@"+o.k_used,o.lift_at_k.toFixed(2)+"×")}</div></div>
+    <div class="card"><h3>Key insights</h3><ul class="ins">
+      <li>Test ROC-AUC <b>${f3(t.roc_auc)}</b>, PR-AUC <b>${f3(t.pr_auc)}</b> (a random ranking would give PR-AUC ≈ ${f3(S.default_rate_test)}).</li>
+      <li>Reviewing the top ${o.k_used} of ${n0(S.n_total)} accounts captures <b>${o.defaults_captured}</b> actual defaults: precision <b>${pc(o.precision_at_k)}</b> vs a <b>${pc(S.default_rate_total)}</b> base rate (<b>${o.lift_at_k.toFixed(1)}×</b> lift).</li>
+      <li>Removing demographics changes test ROC-AUC by only <b>${ab.difference>=0?"+":""}${ab.difference.toFixed(3)}</b> (with ${f3(ab.test_roc_auc_with_demographics)}, without ${f3(ab.test_roc_auc_without_demographics)}). Behaviour features carry the signal.</li>
+      <li>Demographic columns are <b>excluded</b> from the operational model.</li>
+      <li>Results come from a random split of historical (2005) data and may not hold on a future cohort.</li></ul></div></div>
+  <div class="grid g3" style="margin-top:14px"><div class="card"><h3>Model comparison (test set)</h3>${modelTable()}</div>
+    <div class="card"><div id="c-imp" style="height:300px"></div></div>
+    <div class="card"><h3>Data-quality summary</h3>${dqTable(dq)}</div></div>
+  <div class="warn"><b>Important limitations.</b> Historical single-market (2005) data · random split is not a true future cohort · predictions are risk signals, not causal explanations · excluding demographics does not guarantee fairness · not validated for real credit decisions · no automatic approval, rejection or limit change. <a href="#Responsible%20AI">Responsible AI details →</a></div>`;
+  const bins=[];for(let i=0;i<10;i++){bins.push(S.histogram.slice(i*10,i*10+10).reduce((a,b)=>a+b,0))}
+  plot("c-dist",[{type:"bar",x:bins.map((_,i)=>`${(i/10).toFixed(1)}-${((i+1)/10).toFixed(1)}`),y:bins,text:bins.map(n0),textposition:"outside",marker:{color:bins.map((_,i)=>TCOL[tierOf(i/10)])}}],{title:"Risk distribution (predicted default probability)",xaxis:{title:"Probability range"},yaxis:{title:"Accounts"}});
+  impChart("c-imp",8)}
+function impChart(id,n){const imp=S.importance.slice(0,n).reverse();plot(id,[{type:"bar",orientation:"h",x:imp.map(d=>d.importance),y:imp.map(d=>d.feature),marker:{color:"#2563EB"}}],{title:"Global feature importance (permutation)",xaxis:{title:"Drop in ROC-AUC when shuffled"}})}
+function modelTable(){return table(["Model","Val PR-AUC","Test ROC-AUC","Test PR-AUC","F1","P@500","R@500"],Object.entries(S.models).map(([n,v])=>`<tr><td>${n===S.final_model?"★ ":""}<b>${esc(n)}</b></td><td>${f3(v.val.pr_auc)}</td><td>${f3(v.test.roc_auc)}</td><td>${f3(v.test.pr_auc)}</td><td>${f3(v.test.f1)}</td><td>${f3(v.topk_500.precision_at_k)}</td><td>${f3(v.topk_500.recall_at_k)}</td></tr>`))}
+function dqTable(dq){if(!dq)return"<div class='cap'>Not available.</div>";const rows=[["Rows read",dq.rows_in],["Rows used",dq.rows_out],["Missing values",dq.missing_values],["Duplicate IDs (removed)",dq.duplicate_ids],["Invalid target values",dq.invalid_target_rows],["Unexpected columns",dq.unexpected_columns.length],["PAY codes outside -2..9",dq.pay_codes_out_of_documented_range],...Object.entries(dq.unexpected_categories)];return table(["Check","Result"],rows.map(r=>`<tr><td>${esc(r[0])}</td><td><b>${esc(r[1])}</b></td></tr>`))+`<div class="ok" style="margin-bottom:0">${dq.status==="OK"?"Data quality checks passed; undocumented categories mapped, no rows dropped.":"Warnings present - see notes."}</div>`}
+
+function performance(){const fm=S.final_model,m=bestModel(),o=S.oof_topk;
+  $("#app").innerHTML=`<h1>Model Performance</h1><div class="cap">Evaluation on a held-out test set that was not used for model selection.</div>
+  <div class="info"><b>Protocol.</b> Stratified 80/20 split (seed ${S.seed}). Candidates were compared on a validation split carved from the training part; <b>${esc(fm)}</b> was selected on validation PR-AUC. The test set (${n0(S.n_test)} rows) was used only for final reporting. Preprocessing is fitted on training data only; ID, target and demographics never enter the model.</div>
+  <div class="card"><h3>Model comparison</h3>${modelTable()}</div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><div id="p-roc" style="height:370px"></div></div><div class="card"><div id="p-pr" style="height:370px"></div></div></div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><div id="p-cm" style="height:340px"></div></div><div class="card"><div id="p-cal" style="height:340px"></div></div></div>
+  <h2>Operational Top-K metrics</h2><div class="card">${table(["Evaluation","K used","Precision@K","Recall@K","Lift@K","Defaults captured","Base rate"],[[`Population, out-of-fold (n=${n0(S.n_total)})`,o],[`Test set, K=${m.topk_500.k_used} (n=${n0(S.n_test)})`,m.topk_500],[`Test set, capacity-scaled K=${m.topk_scaled.k_used}`,m.topk_scaled]].map(([n,d])=>`<tr><td>${n}</td><td>${d.k_used}</td><td>${f3(d.precision_at_k)}</td><td>${f3(d.recall_at_k)}</td><td>${d.lift_at_k.toFixed(2)}×</td><td>${d.defaults_captured} / ${d.total_defaults}</td><td>${f3(d.base_rate)}</td></tr>`))}
+  <div class="cap" style="margin-top:8px">Top-500 of a ${n0(S.n_test)}-row test set is ${(500/S.n_test*100).toFixed(1)}% of that cohort, so it is not comparable to 500 of ${n0(S.n_total)} (${(500/S.n_total*100).toFixed(1)}%). The capacity-scaled and population rows are the fair equivalents.</div></div>
+  <div class="card" style="margin-top:14px"><h3>Why PR-AUC and Top-500 metrics, not accuracy?</h3><p style="font-size:.88rem;margin:4px 0">About ${pc(S.default_rate_total)} of accounts default, so predicting "no default" for everyone is ~${pc(1-S.default_rate_total)} accurate yet finds no defaults. <b>PR-AUC</b> focuses on the rare class. The risk team can review only 500 accounts, so what matters is <b>Precision@500</b> (share of those 500 that truly default), <b>Recall@500</b> (share of all defaults captured) and <b>Lift@500</b> (precision ÷ base rate).</p></div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><div id="p-imp" style="height:420px"></div><div class="cap">A global view of what the model relies on - not an explanation of any individual customer.</div></div><div class="card"><h3>Data-quality &amp; validation summary</h3>${dqTable(S.data_quality)}</div></div>
+  <div class="warn">Random stratified splits do not simulate a true future deployment cohort; expect performance to differ in production.</div>`;
+  plot("p-roc",[...Object.entries(S.models).map(([n,v])=>({x:v.curves.roc.fpr,y:v.curves.roc.tpr,mode:"lines",name:n,line:{width:n===fm?4:1.5}})),{x:[0,1],y:[0,1],mode:"lines",name:"Chance",line:{dash:"dash",color:"#94A3B8"}}],{title:`ROC curve (test) - ${fm} AUC ${f3(m.test.roc_auc)}`,xaxis:{title:"False positive rate"},yaxis:{title:"True positive rate"}});
+  plot("p-pr",[...Object.entries(S.models).map(([n,v])=>({x:v.curves.pr.recall,y:v.curves.pr.precision,mode:"lines",name:n,line:{width:n===fm?4:1.5}})),{x:[0,1],y:[S.default_rate_test,S.default_rate_test],mode:"lines",name:"Base rate",line:{dash:"dash",color:"#94A3B8"}}],{title:`Precision-recall (test) - ${fm} PR-AUC ${f3(m.test.pr_auc)}`,xaxis:{title:"Recall"},yaxis:{title:"Precision"}});
+  const cm=m.test.confusion_matrix;plot("p-cm",[{type:"heatmap",z:cm,x:["Pred: no default","Pred: default"],y:["Actual: no default","Actual: default"],text:cm.map(r=>r.map(n0)),texttemplate:"%{text}",colorscale:"Blues",showscale:false}],{title:`Confusion matrix (test, threshold ${m.test.threshold.toFixed(2)} from validation F1)`,yaxis:{autorange:"reversed"}});
+  plot("p-cal",[{x:S.calibration.map(d=>d.mean_predicted),y:S.calibration.map(d=>d.observed_rate),mode:"lines+markers",name:"Model",line:{color:"#2563EB"}},{x:[0,1],y:[0,1],mode:"lines",name:"Perfect",line:{dash:"dash",color:"#94A3B8"}}],{title:`Calibration by risk decile (test, Brier ${f3(m.test.brier)})`,xaxis:{title:"Mean predicted"},yaxis:{title:"Observed default rate"}});
+  impChart("p-imp",12)}
+
+function filtered(){return Q.filter(r=>{const p=r.prob,t=tierOf(p);return qstate.tiers.has(t)&&(qstate.action==="All"||r.action===qstate.action)&&p>=qstate.lo&&p<=qstate.hi&&(!qstate.search||r.id.includes(qstate.search.trim()))})}
+function queue(){
+  const tc=Object.fromEntries(TIER_ORDER.map(t=>[t,Q.filter(r=>tierOf(r.prob)===t).length]));
+  $("#app").innerHTML=`<h1>Top-500 Review Queue</h1><div class="cap">Ranked by MODEL-PREDICTED default probability (out-of-fold scores on the UCI data). Predictions are not observed defaults.</div>
+  <div class="grid g4">${TIER_ORDER.map(t=>kpi(t+" tier",tc[t],"in queue")).join("")}</div>
+  <div class="card" style="margin-top:14px"><div class="row">
+   <label>Risk tier<span>${TIER_ORDER.map(t=>`<span class="chip"><input type="checkbox" data-t="${t}" ${qstate.tiers.has(t)?"checked":""}>${t}</span>`).join("")}</span></label>
+   <label>Action category<select id="q-act"><option>All</option>${ACTIONS.map(a=>`<option ${qstate.action===a?"selected":""}>${a}</option>`).join("")}</select></label>
+   <label>Min probability<input id="q-lo" type="number" step="0.01" min="0" max="1" value="${qstate.lo}" style="width:90px"></label>
+   <label>Max probability<input id="q-hi" type="number" step="0.01" min="0" max="1" value="${qstate.hi}" style="width:90px"></label>
+   <label>Search customer ID<input id="q-s" placeholder="e.g. 1234" value="${esc(qstate.search)}"></label>
+   <label>Rows / page<select id="q-size">${[25,50,100].map(n=>`<option ${qstate.size===n?"selected":""}>${n}</option>`).join("")}</select></label>
+   <button id="q-dl">⬇ Download Top-500 (CSV)</button><button id="q-dlf" class="sec">⬇ Download filtered view</button></div>
+  <div id="q-tab"></div></div>`;
+  const draw=()=>{const f=filtered(),pages=Math.max(1,Math.ceil(f.length/qstate.size));qstate.page=Math.min(qstate.page,pages);const v=f.slice((qstate.page-1)*qstate.size,qstate.page*qstate.size);
+    $("#q-tab").innerHTML=f.length?`<div class="cap">Showing ${v.length} of ${f.length} matching accounts. Click a row to open it.</div><div class="scroll">${table(["Rank","Customer ID","Probability","Tier","Primary risk reason","Additional reasons","Recommended action","Priority","Status"],v.map(r=>{const t=tierOf(r.prob);return`<tr class="click" data-id="${esc(r.id)}"><td>${r.rank}</td><td><b>${esc(r.id)}</b></td><td><div>${r.prob.toFixed(3)}</div><div class="bar"><i style="width:${r.prob*100}%"></i></div></td><td>${pill(t)}</td><td>${esc(r.primary)}</td><td>${esc(r.additional)}</td><td>${esc(r.action)}</td><td>${S.tier_priority[t]}</td><td>${esc(statusOf(r.id))}</td></tr>`}))}</div>
+     <div class="row" style="margin-top:10px;align-items:center"><button class="sec" id="pp" ${qstate.page<=1?"disabled":""}>‹ Prev</button><span>Page ${qstate.page} / ${pages}</span><button class="sec" id="pn" ${qstate.page>=pages?"disabled":""}>Next ›</button></div>`:`<div class="info">No accounts match the current filters.</div>`;
+    document.querySelectorAll("#q-tab tr.click").forEach(tr=>tr.onclick=()=>go("Customer Investigation",tr.dataset.id));
+    const pp=$("#pp"),pn=$("#pn");if(pp)pp.onclick=()=>{qstate.page--;draw()};if(pn)pn.onclick=()=>{qstate.page++;draw()}};
+  const upd=()=>{qstate.page=1;draw()};
+  document.querySelectorAll("[data-t]").forEach(c=>c.onchange=()=>{c.checked?qstate.tiers.add(c.dataset.t):qstate.tiers.delete(c.dataset.t);upd()});
+  $("#q-act").onchange=e=>{qstate.action=e.target.value;upd()};$("#q-lo").oninput=e=>{qstate.lo=+e.target.value||0;upd()};$("#q-hi").oninput=e=>{qstate.hi=e.target.value===""?1:+e.target.value;upd()};
+  $("#q-s").oninput=e=>{qstate.search=e.target.value;upd()};$("#q-size").onchange=e=>{qstate.size=+e.target.value;upd()};
+  $("#q-dl").onclick=()=>download("creditwise_top500_queue.csv",csv(Q.map(qRow),QCOLS));
+  $("#q-dlf").onclick=()=>download("creditwise_queue_filtered.csv",csv(filtered().map(qRow),QCOLS));
+  draw()}
+
+function actions(){const top=Q.slice(0,20);const cnt=a=>top.filter(r=>r.action===a).length;const r_=S.action_rules;
+  $("#app").innerHTML=`<h1>Top-20 Action Plan</h1><div class="cap">Rule-based, human-reviewed recommendations from observable financial signals. Provisional rules - not validated bank policy, and not proven to prevent default.</div>
+  <div class="grid g4">${ACTIONS.map(a=>kpi(a.split(" (")[0],cnt(a),"of top 20")).join("")}</div>
+  <div class="row" style="margin-top:14px"><button id="a-dl">⬇ Download Top-20 action plan (CSV)</button></div>
+  <div class="scroll" style="max-height:none">${table(["Rank","Customer ID","Probability","Tier","Main risk signals","Why prioritised","Recommended action","Reason","Suggested next step","Status"],top.map(r=>{const t=tierOf(r.prob),p=planRow(r);return`<tr class="click" data-id="${esc(r.id)}"><td>${r.rank}</td><td><b>${esc(r.id)}</b></td><td>${r.prob.toFixed(3)}</td><td>${pill(t)}</td><td>${esc(p["Main risk signals"])}</td><td>${esc(p["Why prioritised"])}</td><td><b>${esc(r.action)}</b></td><td>${esc(r.actionReason)}</td><td>${esc(r.nextStep)}</td><td>${esc(statusOf(r.id))}</td></tr>`}))}</div>
+  <div class="card" style="margin-top:14px"><h3>Action rules (configurable in src/config.py)</h3><ol style="font-size:.88rem;line-height:1.6">
+   <li><b>PAYMENT PLAN REVIEW</b> - repeated (≥${r_.repeat_delay_months} delayed months) or consecutive (≥${r_.consecutive_delay}) delays <b>and</b> payments stopped or sharply fallen (≥${pc(r_.payment_decline)} decline or ≥2 zero-payment months).</li>
+   <li><b>LIMIT REVIEW</b> - latest bill ≥ ${pc(r_.util_high)} of the limit and a recent/repeated/worsening delay. Human review of exposure and affordability; <b>never an automatic limit reduction</b>.</li>
+   <li><b>CALL / PAYMENT OUTREACH</b> - a recent delay without the combined signals above.</li><li><b>GENERAL ACCOUNT REVIEW</b> - fallback when data are insufficient or no rule fires.</li></ol>
+   <div class="cap" style="margin:0">Repayment codes: -2 no consumption, -1 paid in full, 0 revolving (minimum paid) - none is a delay; ≥1 = months delayed. The top 20 here are all payment-plan cases because each shows 6 months of delay with no recent payments; the full queue contains a mix of actions.</div></div>
+  <div class="warn">A human reviewer must verify every recommendation. Customer contact must be respectful and non-accusatory.</div>`;
+  document.querySelectorAll("tr.click").forEach(tr=>tr.onclick=()=>go("Customer Investigation",tr.dataset.id));
+  $("#a-dl").onclick=()=>download("creditwise_top20_action_plan.csv",csv(top.map(planRow),PCOLS))}
+
+function investigate(id){
+  const cur=id||"";
+  $("#app").innerHTML=`<h1>Customer Investigation</h1><div class="cap">Detail is available for the Top-500 queue accounts. Predicted probability is a model estimate, not an outcome.</div>
+  <div class="row"><label>Customer ID<input id="i-id" value="${esc(cur)}" placeholder="Enter an ID from the queue"></label><button id="i-go">Open</button></div><div id="i-body"></div>`;
+  const render=()=>{const v=$("#i-id").value.trim();const body=$("#i-body");
+    if(!v){body.innerHTML=`<div class="info">Enter a customer ID, or click a row in the Top-500 queue or Top-20 plan.</div>`;return}
+    const r=Q.find(x=>x.id===v);if(!r){body.innerHTML=`<div class="warn">Customer ID "${esc(v)}" is not in the Top-500 queue, so no detail view is available for it.</div>`;return}
+    const t=tierOf(r.prob),log=getLog()[r.id]||{status:"Pending review",note:""},mo=S.month_labels.slice().reverse();
+    const util=r.limit?r.bill[0]/r.limit:null;
+    body.innerHTML=`<div class="grid g4">${kpi("Predicted default probability",pc(r.prob),"model estimate")}${kpi("Risk tier",pill(t),"provisional thresholds")}${kpi("Population rank","#"+r.rank,"of "+n0(S.n_population)+" accounts")}${kpi("Suggested action",esc(r.action.split(" (")[0]),"human decision required")}</div>
+    <div class="grid g2" style="margin-top:14px"><div class="card"><h3>Risk signals</h3><ul>${(r.reasons.length?r.reasons:["No dominant rule-based signal; prioritised by model score only."]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="cap">Signals are rule-based observations of the account history - not causal explanations of the model's score.</div>
+      <h3 style="margin-top:14px">Recommendation</h3><p style="margin:4px 0"><b>${esc(r.action)}</b></p><p style="margin:4px 0;font-size:.88rem">${esc(r.actionReason)}</p><p style="margin:4px 0;font-size:.88rem"><i>Next step:</i> ${esc(r.nextStep)}</p>
+      <div class="cap" style="margin-top:8px">Credit limit ${n0(r.limit)} · latest bill ${n0(r.bill[0])}${util!=null?` (${pc(util)} of limit)`:""}</div></div>
+     <div class="card"><div id="i-bp" style="height:260px"></div><div id="i-pay" style="height:230px"></div></div></div>
+    <h2>Recent repayment history</h2><div class="scroll">${table(["Month","Repayment status","Meaning","Bill amount","Payment amount"],mo.map((m,k)=>{const j=5-k;return`<tr><td>${m}</td><td>${r.pay[j]}</td><td>${esc(r.payMeaning[j])}</td><td>${n0(r.bill[j])}</td><td>${n0(r.payamt[j])}</td></tr>`}))}</div>
+    <div class="cap" style="margin-top:6px">Historical label (evaluation only; not shown to reviewers in production): observed default next month = ${r.actual==null?"n/a":r.actual}</div>
+    <h2>Human review</h2><div class="card"><div class="row"><label>Review status<select id="i-st">${STATUSES.map(s=>`<option ${s===log.status?"selected":""}>${s}</option>`).join("")}</select></label></div>
+     <label style="font-size:.76rem;color:var(--mut);font-weight:600;display:block">Reviewer notes<textarea id="i-note" rows="3" style="width:100%;margin-top:3px" placeholder="Verified account data; contacted customer; …">${esc(log.note)}</textarea></label>
+     <div class="row" style="margin-top:10px"><button id="i-save">Save review</button><button class="sec" id="i-exp">⬇ Download review log (CSV)</button><span id="i-msg" class="cap" style="margin:0"></span></div></div>
+    <div class="warn"><b>Disclaimer:</b> a human reviewer must verify all information before any action. Notes are stored in this browser only - export them to keep them.</div>`;
+    plot("i-bp",[{type:"bar",x:mo,y:mo.map((_,k)=>r.bill[5-k]),name:"Bill amount",marker:{color:"#93C5FD"}},{type:"bar",x:mo,y:mo.map((_,k)=>r.payamt[5-k]),name:"Payment amount",marker:{color:"#2563EB"}}],{barmode:"group",title:"Bill vs payment amounts (oldest → newest)"});
+    plot("i-pay",[{x:mo,y:mo.map((_,k)=>r.pay[5-k]),mode:"lines+markers",line:{color:"#B91C1C"},text:mo.map((_,k)=>r.payMeaning[5-k]),hovertemplate:"%{x}: %{text}<extra></extra>"}],{title:"Repayment status (≤0 not delayed, ≥1 months delayed)",shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:0.5,y1:0.5,line:{dash:"dot",color:"#94A3B8"}}]});
+    $("#i-save").onclick=()=>{const l=getLog();l[r.id]={status:$("#i-st").value,note:$("#i-note").value};setLog(l);$("#i-msg").textContent="Saved in this browser.";};
+    $("#i-exp").onclick=()=>{const l=getLog();download("creditwise_review_log.csv",csv(Object.entries(l).map(([k,v])=>({"Customer ID":k,"Status":v.status,"Note":v.note})),["Customer ID","Status","Note"]))}};
+  $("#i-go").onclick=()=>{const v=$("#i-id").value.trim();history.replaceState(null,"","#"+encodeURIComponent("Customer Investigation")+(v?encodeURIComponent("::"+v):""));render()};
+  $("#i-id").onkeydown=e=>{if(e.key==="Enter")$("#i-go").click()};render()}
+
+function responsible(){const ab=S.ablation,fa=S.fairness;
+  const INC=["LIMIT_BAL","PAY_0, PAY_2 … PAY_6 (repayment status)","BILL_AMT1 … BILL_AMT6","PAY_AMT1 … PAY_AMT6","Engineered: delayed-month counts, consecutive delays, utilisation, payment-to-bill ratios, payment/bill trends"];
+  $("#app").innerHTML=`<h1>Responsible AI</h1><div class="warn">CreditWise AI is a <b>decision-support prototype</b>. It has <b>not</b> been validated for real credit decisions and makes no claim of legal compliance or fairness.</div>
+  <div class="grid g2"><div class="card"><h3>Columns used for prediction</h3><ul>${INC.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+   <div class="card"><h3>Columns excluded - and why</h3><ul><li><b>SEX, AGE, MARRIAGE, EDUCATION</b> - protected or proxy attributes; using them for credit risk raises fairness and legal concerns.</li><li><b>ID</b> - an identifier, not a customer characteristic (used only to label the queue).</li><li><b>default.payment.next.month</b> - the target; including it would be leakage.</li></ul></div></div>
+  <div class="ok"><b>Ablation (audit-only experiment, ${esc(ab.model)}):</b> test ROC-AUC with demographics ${f3(ab.test_roc_auc_with_demographics)} vs without ${f3(ab.test_roc_auc_without_demographics)} (Δ ${ab.difference>=0?"+":""}${ab.difference.toFixed(3)}). Dropping demographics costs almost nothing, so they are not needed.</div>
+  <div class="card"><h3>What exclusion does not solve</h3><ul><li>Dropping demographic columns <b>does not guarantee fairness</b>; behavioural features can still proxy for protected groups.</li><li>Historical lending data can encode past bias, and a single-market 2005 snapshot may not generalise.</li><li>Predictions are statistical associations, <b>not causal explanations</b>; reason codes are risk signals.</li><li>The model is <b>not validated</b> for approval, pricing or limit decisions.</li></ul></div>
+  <h2>Descriptive fairness audit</h2><div class="cap">Demographic columns are used here ONLY to compare outcomes across groups (never for scoring or actions). Groups under 100 records are suppressed. Real deployments need consent, access control and legal review.</div>
+  ${fa?`<div class="scroll">${table(["Attribute","Group","N","Observed default rate","Mean predicted risk","Share flagged in Top-500","Flag-rate ratio vs overall","Precision of flagged","Note"],fa.map(r=>`<tr><td>${esc(r.Attribute)}</td><td>${esc(r.Group)}</td><td>${n0(r.N)}</td><td>${f3(r["Observed default rate"])}</td><td>${f3(r["Mean predicted risk"])}</td><td>${f3(r["Share flagged in queue"])}</td><td>${f3(r["Flag-rate ratio vs overall"])}</td><td>${f3(r["Precision of flagged"])}</td><td>${esc(r.Note||"")}</td></tr>`))}</div><div class="cap" style="margin-top:6px">A flag-rate ratio far from 1.0, or differing precision, is a prompt for investigation - not proof of unfairness or fairness.</div>`:`<div class="info">Audit unavailable.</div>`}
+  <div class="grid g2" style="margin-top:14px"><div class="card"><h3>Human-review policy</h3><ul><li>Every queue entry is <b>Pending review</b> until a person verifies the data.</li><li>The system never approves, rejects, penalises or reduces a limit.</li><li>Customer contact must be respectful and non-accusatory.</li><li>Reviewers record outcomes so the model can be monitored.</li></ul></div>
+   <div class="card"><h3>Intended vs prohibited use</h3><p style="font-size:.88rem"><b>Intended:</b> prioritising accounts for <i>supportive</i> human review (outreach, payment-plan assessment, exposure review).</p><p style="font-size:.88rem"><b>Prohibited:</b> automated declines, automatic limit cuts, pricing, collections pressure, or any use of demographic attributes in decisions.</p></div></div>`}
+
+function tracking(){const ml=S.mlflow||{};const sel=ml.runs&&ml.runs.find(r=>r.selected);
+  $("#app").innerHTML=`<h1>Experiment Tracking (MLflow)</h1><div class="cap">Experiment <code>${esc(ml.experiment)}</code> · seed ${S.seed} · train/test ${n0(S.n_train)} / ${n0(S.n_test)} · trained ${esc(S.trained_at)}</div>
+  ${ml.enabled?`<div class="ok">MLflow logged ${ml.runs.length} runs for this training.</div>`:""}${ml.warning?`<div class="warn">${esc(ml.warning)}</div>`:""}
+  <div class="card"><h3>Runs</h3><div class="scroll">${table(["Model","Run ID","Selected","ROC-AUC","PR-AUC","Precision","Recall","F1","P@500","R@500","Lift@500"],(ml.runs||[]).map(r=>`<tr><td>${esc(r.model)}</td><td><code>${esc(r.run_id)}</code></td><td>${r.selected?"★":""}</td><td>${f3(r.metrics.roc_auc)}</td><td>${f3(r.metrics.pr_auc)}</td><td>${f3(r.metrics.precision)}</td><td>${f3(r.metrics.recall)}</td><td>${f3(r.metrics.f1)}</td><td>${f3(r.metrics.precision_at_500)}</td><td>${f3(r.metrics.recall_at_500)}</td><td>${r.metrics.lift_at_500!=null?r.metrics.lift_at_500.toFixed(2):"-"}</td></tr>`))}</div></div>
+  <div class="card" style="margin-top:14px"><h3>Hyperparameters - ${esc(S.final_model)} (selected)</h3><pre style="font-size:.78rem;white-space:pre-wrap;margin:0">${esc(JSON.stringify(S.models[S.final_model].params,null,1))}</pre></div>
+  <div class="card" style="margin-top:14px"><h3>View runs locally</h3><pre style="background:#0B1F3A;color:#E2E8F0;padding:12px;border-radius:8px;font-size:.82rem;margin:0">mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
+# then open http://localhost:5000</pre><div class="cap" style="margin-top:8px">Tracking runs on the machine where the model is trained. This hosted dashboard is a static snapshot of those results; re-run <code>train_model.py</code> and <code>export_static.py</code> to refresh it.</div></div>`}
+
+/* ---------- boot ---------- */
+async function boot(){
+  try{
+    [S,Q]=await Promise.all([fetch("data/summary.json").then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("data/queue.json").then(r=>{if(!r.ok)throw 0;return r.json()})]);
+  }catch{$("#app").innerHTML=`<h1>CreditWise AI</h1><div class="warn"><b>No results found.</b> Run <code>python scripts/train_model.py</code> then <code>python scripts/export_static.py</code> to generate <code>web/data/*.json</code>.</div>`;$("#sidebox").textContent="No data";return}
+  tiers={...S.tiers};
+  const bind=(id,k)=>{const el=$(id);el.value=tiers[k];el.onchange=()=>{const t={Critical:+$("#t-c").value,High:+$("#t-h").value,Elevated:+$("#t-e").value};
+    if(t.Critical>t.High&&t.High>t.Elevated&&t.Elevated>=0&&t.Critical<=1){tiers=t;route()}else{alert("Thresholds must satisfy Critical > High > Elevated.");$("#t-c").value=tiers.Critical;$("#t-h").value=tiers.High;$("#t-e").value=tiers.Elevated}}};
+  bind("#t-c","Critical");bind("#t-h","High");bind("#t-e","Elevated");
+  $("#sidebox").innerHTML=`<b>Model:</b> ${esc(S.final_model)}<br><b>Population:</b> UCI data (out-of-fold)<br><b>Records:</b> ${n0(S.n_total)}<br><b>Queue:</b> Top-${S.queue_size}`;
+  route()}
+boot();
+</script>
+</body></html>

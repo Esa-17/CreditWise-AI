@@ -1,0 +1,38 @@
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Private datasets
+/data/*
+!/data/.gitkeep
+
+# Generated model artifacts
+/artifacts/*
+!/artifacts/.gitkeep
+
+# MLflow files
+mlruns/
+mlflow.db
+
+# Model files - review before committing
+*.joblib
+*.pkl
+
+# Secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Logs and operating-system files
+*.log
+.DS_Store
+Thumbs.db
